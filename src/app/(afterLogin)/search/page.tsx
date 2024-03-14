@@ -1,7 +1,7 @@
 import style from './search.module.css';
 import BackButton from "@/app/(afterLogin)/_component/BackButton";
 import SearchForm from "@/app/(afterLogin)/_component/SearchForm";
-// import Tab from "@/app/(afterLogin)/search/_component/Tab";
+import Tab from "@/app/(afterLogin)/search/_component/Tab";
 import Post from "@/app/(afterLogin)/_component/Post";
 
 type Props = {
@@ -19,7 +19,7 @@ export default function Search({ searchParams }: Props) {
             <SearchForm q={searchParams.q} />
           </div>
         </div>
-        {/* <Tab/> */}
+        <Tab/>
       </div>
       <div className={style.list}>
         <Post />
