@@ -3,7 +3,7 @@
 import style from "./rightSearchZone.module.css";
 import {usePathname} from "next/navigation";
 import React from "react";
-// import SearchForm from "@/app/(afterLogin)/_component/SearchForm";
+import SearchForm from "@/app/(afterLogin)/_component/SearchForm";
 
 export default function RightSearchZone() {
   const pathname = usePathname()
@@ -34,7 +34,7 @@ export default function RightSearchZone() {
   }
   return (
     <div style={{ marginBottom: 60, width: 'inherit' }}>
-      {/* <SearchForm /> */}
+      <SearchForm />
     </div>
   )
 }
