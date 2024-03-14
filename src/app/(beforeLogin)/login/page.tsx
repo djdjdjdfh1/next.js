@@ -10,4 +10,3 @@ export default function Login() {
     <Main/>
   );
 }
-//이게 드디어 올라가네
