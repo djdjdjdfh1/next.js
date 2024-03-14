@@ -6,9 +6,9 @@ type Props = {
   white?: boolean
 }
 export default function ActionButtons({ white }: Props) {
-  const commented = true;
+  const commented = false;
   const reposted = true;
-  const liked = false;
+  const liked = true;
 
   const onClickComment = () => {}
   const onClickRepost = () => {}

@@ -15,7 +15,7 @@ export default function Post() {
       nickname: 'Elon Musk',
       image: '/yRsRRjGO.jpg',
     },
-    content: '언제쯤 완성이 될까요 ㅠㅠ',
+    content: '언제쯤 완성이 될까요?',
     createdAt: new Date(),
     Images: [],
   }
