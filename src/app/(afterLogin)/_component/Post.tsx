@@ -23,7 +23,6 @@ export default function Post() {
   }
   return (
     <PostArticle post={target}>
-    {/* <article className={style.post}> */}
       <div className={style.postWrapper}>
         <div className={style.postUserSection}>
           <Link href={`/${target.User.id}`} className={style.postUserImage}>
@@ -50,7 +49,6 @@ export default function Post() {
           <ActionButtons />
         </div>
       </div>
-    {/* </article> */}
     </PostArticle>
   )
 }
