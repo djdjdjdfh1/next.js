@@ -64,4 +64,3 @@ export default function TweetModal() {
     </div>
   )
 }
-// 왤케 힘드냐
