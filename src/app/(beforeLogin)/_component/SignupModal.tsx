@@ -1,5 +1,4 @@
 import style from './signup.module.css';
-import {ChangeEventHandler, FormEventHandler, useState} from "react";
 import BackButton from '@/app/(beforeLogin)/_component/BackButton'
 import { redirect } from 'next/navigation';
 
@@ -33,6 +32,7 @@ export default function SignupModal() {
       shouldRedirect = true;
     } catch (err) {
       console.error(err)
+      return;
     }
     if (shouldRedirect) {
       redirect('/home'); // try/catch안에서 쓰면 안됨
@@ -47,29 +47,29 @@ export default function SignupModal() {
             <BackButton />
             <div>계정을 생성하세요.</div>
           </div>
-          <form>
+          <form action={submit}>
             <div className={style.modalBody}>
               <div className={style.inputDiv}>
                 <label className={style.inputLabel} htmlFor="id">아이디</label>
-                <input id="id" className={style.input} type="text" placeholder="" required
+                <input id="id" name="id" className={style.input} type="text" placeholder="" required
 
                 />
               </div>
               <div className={style.inputDiv}>
                 <label className={style.inputLabel} htmlFor="name">닉네임</label>
-                <input id="name" className={style.input} type="text" placeholder="" required
+                <input id="name" name="name" className={style.input} type="text" placeholder="" required
 
                 />
               </div>
               <div className={style.inputDiv}>
                 <label className={style.inputLabel} htmlFor="password">비밀번호</label>
-                <input id="password" className={style.input} type="password" placeholder="" required
+                <input id="password" name="password" className={style.input} type="password" placeholder="" required
 
                 />
               </div>
               <div className={style.inputDiv}>
                 <label className={style.inputLabel} htmlFor="image">프로필</label>
-                <input id="image" className={style.input} type="file" accept="image/*" required
+                <input id="image" name="image" className={style.input} type="file" accept="image/*" required
 
                 />
               </div>
