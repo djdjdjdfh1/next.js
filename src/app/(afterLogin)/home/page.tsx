@@ -4,7 +4,6 @@ import TabProvider from "@/app/(afterLogin)/home/_component/TabProvider";
 import PostForm from "@/app/(afterLogin)/home/_component/PostForm";
 import Post from "@/app/(afterLogin)/_component/Post";
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
-import { revalidatePath } from 'next/cache';
 
 async function getPostRecommends() {
   const res = await fetch(`http://localhost:9090/api/postRecommends`, {
@@ -17,8 +16,6 @@ async function getPostRecommends() {
   if (!res.ok) {
     throw new Error('Failed to fetch data')
   }
-
-  revalidatePath('/home');
 
   return res.json();
 }
