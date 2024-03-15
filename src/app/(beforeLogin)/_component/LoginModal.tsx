@@ -2,8 +2,8 @@
 
 import style from '@/app/(beforeLogin)/_component/login.module.css';
 import {ChangeEventHandler, FormEventHandler, useState} from "react";
-import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import {redirect, useRouter} from "next/navigation";
+import {signIn} from "next-auth/react";
 
 export default function LoginModal() {
   const [id, setId] = useState('');
@@ -20,13 +20,12 @@ export default function LoginModal() {
         password,
         redirect: false,
       })
-      router.replace('/home')
+      router.replace('/home');
     } catch (err) {
       console.error(err);
-      setMessage('아이디와 비밀번호가 일치하지 않습니다.')
+      setMessage('아이디와 비밀번호가 일치하지 않습니다.');
     }
   };
-
   const onClickClose = () => {
     router.back();
   };
