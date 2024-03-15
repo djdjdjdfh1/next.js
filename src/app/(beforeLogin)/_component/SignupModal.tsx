@@ -3,38 +3,11 @@ import {ChangeEventHandler, FormEventHandler, useState} from "react";
 import BackButton from '@/app/(beforeLogin)/_component/BackButton'
 
 export default function SignupModal() {
-  const onClickClose = () => {
-    router.back();
-    // TODO: 뒤로가기가 /home이 아니면 /home으로 보내기
-  }
-
-  const onChangeId: ChangeEventHandler<HTMLInputElement> = (e) => { setId(e.target.value) };
-
-  const onChangePassword: ChangeEventHandler<HTMLInputElement> = (e) => { setPassword(e.target.value) };
-  const onChangeNickname: ChangeEventHandler<HTMLInputElement> = (e) => { setNickname(e.target.value) };
-  const onChangeImageFile: ChangeEventHandler<HTMLInputElement> = (e) => {
-    e.target.files && setImageFile(e.target.files[0])
-  };
-
-  const onSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    fetch('http://localhost:9090/api/users', {
-      method: 'post',
-      body: JSON.stringify({
-        id,
-        nickname,
-        image,
-        password,
-      }),
-      credentials: 'include',
-    }).then((response: Response) => {
-      console.log(response.status);
-      if (response.status === 200) {
-        router.replace('/home');
-      }
-    }).catch((err) => {
-      console.error(err);
-    });
+  const submit = async(formData: FormData) => {
+    "use server";
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users`, {
+      
+    })
   }
 
   return (
