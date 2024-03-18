@@ -13,9 +13,8 @@ export default function ActionButtons({ white }: Props) {
 
   const onClickComment = () => {}
   const onClickRepost = () => {}
-  const onClickHeart: MouseEventHandler<HTMLAnchorElement> = (e) => {
+  const onClickHeart: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
-    e.preventDefault();
     console.log('heart');
   }
 
