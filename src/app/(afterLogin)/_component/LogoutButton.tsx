@@ -6,7 +6,7 @@ import {useRouter} from "next/navigation";
 import { Session } from '@auth/core/types'
 
 type Props = {
-  me: Session
+  me: Session | null
 }
 
 export default function LogoutButton({ me }: Props) {
