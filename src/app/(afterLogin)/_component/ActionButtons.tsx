@@ -2,16 +2,20 @@
 import { MouseEventHandler } from 'react';
 import style from './post.module.css';
 import cx from 'classnames';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Post } from '@/model/Post';
+import { useSession } from 'next-auth/react';
 
 type Props = {
   white?: boolean
   postId: number,
 }
 export default function ActionButtons({ white, postId }: Props) {
+  const queryClient = useQueryClient();
   const commented = false;
   const reposted = true;
   const liked = true;
+  const {data:session} = useSession();
   const heart = useMutation({
     mutationFn: () => {
       return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${postId}/heart`, {
@@ -20,7 +24,42 @@ export default function ActionButtons({ white, postId }: Props) {
       })
     },
     onMutate() {
-      
+      const queryCache = queryClient.getQueryCache();
+      const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
+      console.log('queryKeys', queryKeys);
+      queryKeys.forEach((queryKey) => {
+        if (queryKey[0] === 'posts') {
+          const value: Post | Post[] | undefined = queryClient.getQueryData(queryKey);
+          if (Array.isArray(value)) {
+            const index = value.findIndex((v) => v.postId === postId);
+            if (index > -1) {
+              const shallow = [...value];
+              shallow[index] = {
+                ...shallow[index],
+                Hearts: [{ userId: session?.user?.email as string}],
+                _count: {
+                  ...shallow[index]._count,
+                  Hearts: shallow[index]._count.Hearts + 1,
+                }
+              }
+              queryClient.setQueryData(queryKey, shallow);
+            }
+          } else if (value) {
+            // 싱글 포스트인 경우
+            if (value.postId === postId) {
+              const shallow = { 
+                ...value,
+                Hearts: [{ userId: session?.user?.email as string}],
+                _count: {
+                  ...value._count,
+                  Hearts: value._count.Hearts + 1,
+                  }
+                }
+                queryClient.setQueryData(queryKey, shallow);
+            }
+          }
+        }
+      })
     },
     onError() {
       
@@ -34,7 +73,12 @@ export default function ActionButtons({ white, postId }: Props) {
   const onClickRepost = () => {}
   const onClickHeart: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
-    console.log('heart');
+    heart.mutate();
+    if (liked) {
+      // umheart.mutate();
+    } else {
+      heart.mutate();
+    }
   }
 
   return (
