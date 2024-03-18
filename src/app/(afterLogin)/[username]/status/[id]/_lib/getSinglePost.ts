@@ -8,6 +8,7 @@ export const getSinglePost: QueryFunction<Post, [_1: string, _2: string]>
     next: {
       tags: ['posts', id],
     },
+    credentials: 'include',
   });
   // The return value is *not* serialized
   // You can return Date, Map, Set, etc.
