@@ -5,6 +5,8 @@ import BackButton from "@/app/(afterLogin)/_component/BackButton";
 import {useQuery} from "@tanstack/react-query";
 import {User} from "@/model/User";
 import {getUser} from "@/app/(afterLogin)/[username]/_lib/getUser";
+import cx from 'classnames';
+import { useSession } from "next-auth/react";
 
 type Props = {
   username: string;
@@ -16,6 +18,7 @@ export default function UserInfo({username}: Props) {
     staleTime: 60 * 1000, // fresh -> stale, 5분이라는 기준
     gcTime: 300 * 1000,
   });
+  const {data:session} = useSession();
   console.log('error');
   console.dir(error);
   if (error) {
@@ -47,6 +50,12 @@ export default function UserInfo({username}: Props) {
   if (!user) {
     return null;
   }
+
+  const followed = user.Followers?.find((v) => v.userId === session?.user?.email)
+  const onFollow = () => {
+    
+  }
+
   return (
     <>
       <div className={style.header}>
@@ -61,7 +70,10 @@ export default function UserInfo({username}: Props) {
           <div>{user.nickname}</div>
           <div>@{user.id}</div>
         </div>
-        <button className={style.followButton}>팔로우</button>
+        { user.id !== session?.user?.email && 
+          <button 
+            onClick={onFollow} 
+            className={cx(style.followButton, followed && style.followed)}>{followed ? '팔로잉' : '팔로우'}</button>}
       </div>
     </>
   )
