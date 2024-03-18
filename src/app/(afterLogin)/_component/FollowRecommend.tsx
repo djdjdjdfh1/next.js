@@ -50,8 +50,34 @@ export default function FollowRecommend({ user }: Props) {
         queryClient.setQueryData(['users', userId], shallow)
       } 
     },
-    onError(error) {
+    onError(error, userId: string) {
       console.error(error)
+      const value: User[] | undefined = queryClient.getQueryData(['users', 'followRecommends']);
+      if (value) {
+        const index = value.findIndex((v) => v.id === userId);
+        const shallow = [...value];
+        shallow[index] = {
+          ...shallow[index],
+          Followers: shallow[index].Followers.filter((v) => v.userId !== session?.user?.email),
+          _count: {
+            ...shallow[index]._count,
+            Followers: shallow[index]._count?.Followers - 1,
+          }
+        }
+        queryClient.setQueryData(['users', 'followRecommends'], shallow)
+      }
+      const value2: User | undefined = queryClient.getQueryData(['users', userId]);
+      if (value2) {
+        const shallow = {
+          ...value2,
+          Followers: value2.Followers.filter((v) => v.userId !== session?.user?.email),
+          _count: {
+            ...value2._count,
+            Followers: value2._count?.Followers - 1,
+          }
+        }
+        queryClient.setQueryData(['users', userId], shallow)
+      }
     },
   })
   const unfollow = useMutation({
@@ -89,8 +115,34 @@ export default function FollowRecommend({ user }: Props) {
         queryClient.setQueryData(['users', userId], shallow)
       }
     },
-    onError(error) {
+    onError(error, userId: string) {
       console.error(error)
+      const value: User[] | undefined = queryClient.getQueryData(['users', 'followRecommends']);
+      if (value) {
+        const index = value.findIndex((v) => v.id === userId);
+        const shallow = [...value];
+        shallow[index] = {
+          ...shallow[index],
+          Followers: [{ userId: session?.user?.email as string }],
+          _count: {
+            ...shallow[index]._count,
+            Followers: shallow[index]._count?.Followers + 1,
+          }
+        }
+        queryClient.setQueryData(['users', 'followRecommends'], shallow)
+      }
+      const value2: User | undefined = queryClient.getQueryData(['users', userId]);
+      if (value2) {
+        const shallow = {
+          ...value2,
+          Followers: [{ userId: session?.user?.email as string }],
+          _count: {
+            ...value2._count,
+            Followers: value2._count?.Followers + 1,
+          }
+        }
+        queryClient.setQueryData(['users', userId], shallow)
+      } 
     },
   })
   
