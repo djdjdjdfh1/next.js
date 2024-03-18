@@ -1,14 +1,17 @@
 "use client"
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import style from './followRecommend.module.css';
 import {User} from "@/model/User";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import cx from "classnames";
 
 type Props = {
   user: User
 }
 export default function FollowRecommend({ user }: Props) {
-  const followed = false;
+  const {data:session} = useSession();
+  const followed = !!user.Followers.find((v) => v.userId === session?.user?.email);
   const queryClient = useQueryClient();
   const follow = useMutation({
     mutationFn: (userId: string) => {
@@ -17,8 +20,25 @@ export default function FollowRecommend({ user }: Props) {
         method: 'post',
       })
     },
-    onMutate() {},
-    onError() {},
+    onMutate(userId: string) {
+      const value: User[] | undefined = queryClient.getQueryData(['users', 'followRecommends']);
+      if (value) {
+        const index = value.findIndex((v) => v.id === userId);
+        const shallow = [...value];
+        shallow[index] = {
+          ...shallow[index],
+          Followers: [{ userId: session?.user?.email as string }],
+          _count: {
+            ...shallow[index]._count,
+            Followers: shallow[index]._count?.Followers + 1,
+          }
+        }
+        queryClient.setQueryData(['users', 'followRecommends'], shallow)
+      } 
+    },
+    onError(error) {
+      console.error(error)
+    },
   })
   const unfollow = useMutation({
     mutationFn: (userId: string) => {
@@ -34,18 +54,25 @@ export default function FollowRecommend({ user }: Props) {
         const shallow = [...value];
         shallow[index] = {
           ...shallow[index],
+          Followers: shallow[index].Followers.filter((v) => v.userId !== session?.user?.email),
+          _count: {
+            ...shallow[index]._count,
+            Followers: shallow[index]._count?.Followers - 1,
+          }
         }
+        queryClient.setQueryData(['users', 'followRecommends'], shallow)
       } 
-      queryClient.setQueryData(['users', 'followRecommends'], value)
     },
-    onError() {},
+    onError(error) {
+      console.error(error)
+    },
   })
   
   const onFollow = () => {
     if (followed) {
-      unfollow.mutate();
+      unfollow.mutate(user.id);
     } else {
-      follow.mutate();
+      follow.mutate(user.id);
     }
   };
 
@@ -60,8 +87,8 @@ export default function FollowRecommend({ user }: Props) {
         <div className={style.title}>{user.nickname}</div>
         <div className={style.count}>@{user.id}</div>
       </div>
-      <div className={style.followButtonSection}>
-        <button onClick={onFollow}>팔로우</button>
+      <div className={cx(style.followButtonSection, followed && style.followed)}>
+        <button onClick={onFollow}>{ followed ? '팔로잉': '팔로우' }</button>
       </div>
     </div>
   )
