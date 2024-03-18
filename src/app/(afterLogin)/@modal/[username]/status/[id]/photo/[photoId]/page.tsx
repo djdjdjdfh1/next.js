@@ -1,7 +1,8 @@
 import CommentForm from "@/app/(afterLogin)/[username]/status/[id]/_component/CommentForm";
 import ActionButtons from "@/app/(afterLogin)/_component/ActionButtons";
 import style from './photoModal.module.css';
-import PhotoModalCloseButton from "@/app/(afterLogin)/@modal/[username]/status/[id]/photo/[photoId]/_component/PhotoModalCloseButton";
+import PhotoModalCloseButton
+  from "@/app/(afterLogin)/@modal/[username]/status/[id]/photo/[photoId]/_component/PhotoModalCloseButton";
 import {dehydrate, HydrationBoundary, QueryClient} from "@tanstack/react-query";
 import {getSinglePost} from "@/app/(afterLogin)/[username]/status/[id]/_lib/getSinglePost";
 import {getComments} from "@/app/(afterLogin)/[username]/status/[id]/_lib/getComments";
