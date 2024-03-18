@@ -1,18 +1,18 @@
 "use client"
 
-import { signOut, useSession } from "next-auth/react";
 import style from "./logoutButton.module.css";
-import { redirect, useRouter } from "next/navigation";
+import {signOut, useSession} from "next-auth/react";
+import {useRouter} from "next/navigation";
 
 export default function LogoutButton() {
   const router = useRouter();
   const { data: me } = useSession();
 
   const onLogout = () => {
-    signOut( { redirect: false })
+    signOut({ redirect: false })
       .then(() => {
         router.replace('/');
-      })
+      });
   };
 
   if (!me?.user) {
