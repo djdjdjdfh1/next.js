@@ -13,7 +13,6 @@ export default function TweetModal() {
 
   const onSubmit = () => {};
   const onClickClose = () => {
-
     router.back();
   }
   const onClickButton = () => {}
