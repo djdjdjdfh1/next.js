@@ -3,7 +3,7 @@
 import { MouseEventHandler } from 'react';
 import style from './post.module.css';
 import cx from 'classnames';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Post } from '@/model/Post';
 import { useSession } from 'next-auth/react';
 
@@ -14,9 +14,9 @@ type Props = {
 export default function ActionButtons({ white, post }: Props) {
   const queryClient = useQueryClient();
   const {data:session} = useSession();
-  const commented = !!post.Comments.find((v) => v.userId === session?.user?.email);
-  const reposted = !!post.Reposts.find((v) => v.userId === session?.user?.email);
-  const liked = !!post.Hearts.find((v) => v.userId === session?.user?.email);
+  const commented = !!post.Comments?.find((v) => v.userId === session?.user?.email);
+  const reposted = !!post.Reposts?.find((v) => v.userId === session?.user?.email);
+  const liked = !!post.Hearts?.find((v) => v.userId === session?.user?.email);
   const { postId } = post;
   const heart = useMutation({
     mutationFn: () => {
@@ -29,19 +29,27 @@ export default function ActionButtons({ white, post }: Props) {
       const queryCache = queryClient.getQueryCache();
       const queryKeys = queryCache.getAll().map(cache => cache.queryKey)
       console.log('queryKeys', queryKeys);
+
       queryKeys.forEach((queryKey) => {
         if (queryKey[0] === 'posts') {
-          const value: Post | Post[] | undefined = queryClient.getQueryData(queryKey);
-          if (Array.isArray(value)) {
-            const index = value.findIndex((v) => v.postId === postId);
-            if (index > -1) {
-              const shallow = [...value];
-              shallow[index] = {
-                ...shallow[index],
+          console.log(queryKey[0])
+          const value: Post | InfiniteData<Post[]> | undefined = queryClient.getQueryData(queryKey);
+          if (value && 'pages' in value) {
+            console.log('array', value);
+            const obj = value.pages.flat().find((v) => v.postId === postId);
+            if (obj) { // 존재는 하는지 
+              const pageIndex = value.pages.findIndex((page) => page.includes(obj));
+              const index = value.pages[pageIndex].findIndex((v) => v.postId === postId);
+              console.log('found index', index);
+              const shallow = { ...value };
+              value.pages = {...value.pages}
+              value.pages[pageIndex] = [...value.pages[pageIndex]];
+              shallow.pages[pageIndex][index] = {
+                ...shallow.pages[pageIndex][index],
                 Hearts: [{ userId: session?.user?.email as string}],
                 _count: {
-                  ...shallow[index]._count,
-                  Hearts: shallow[index]._count.Hearts + 1,
+                  ...shallow.pages[pageIndex][index]._count,
+                  Hearts: shallow.pages[pageIndex][index]._count.Hearts + 1,
                 }
               }
               queryClient.setQueryData(queryKey, shallow);
@@ -84,17 +92,23 @@ export default function ActionButtons({ white, post }: Props) {
       console.log('queryKeys', queryKeys);
       queryKeys.forEach((queryKey) => {
         if (queryKey[0] === 'posts') {
-          const value: Post | Post[] | undefined = queryClient.getQueryData(queryKey);
-          if (Array.isArray(value)) {
-            const index = value.findIndex((v) => v.postId === postId);
-            if (index > -1) {
-              const shallow = [...value];
-              shallow[index] = {
-                ...shallow[index],
-                Hearts: shallow[index].Hearts.filter((v) => v.userId !== session?.user?.email),
+          const value: Post | InfiniteData<Post[]> | undefined = queryClient.getQueryData(queryKey);
+          if (value && 'pages' in value) {
+            console.log('array', value);
+            const obj = value.pages.flat().find((v) => v.postId === postId);
+            if (obj) { // 존재는 하는지 
+              const pageIndex = value.pages.findIndex((page) => page.includes(obj));
+              const index = value.pages[pageIndex].findIndex((v) => v.postId === postId);
+              console.log('found index', index);
+              const shallow = { ...value };
+              value.pages = {...value.pages}
+              value.pages[pageIndex] = [...value.pages[pageIndex]];
+              shallow.pages[pageIndex][index] = {
+                ...shallow.pages[pageIndex][index],
+                Hearts: shallow.pages[pageIndex][index].Hearts.filter((v) => v.userId !== session?.user?.email),
                 _count: {
-                  ...shallow[index]._count,
-                  Hearts: shallow[index]._count.Hearts - 1,
+                  ...shallow.pages[pageIndex][index]._count,
+                  Hearts: shallow.pages[pageIndex][index]._count.Hearts - 1,
                 }
               }
               queryClient.setQueryData(queryKey, shallow);
@@ -131,7 +145,7 @@ export default function ActionButtons({ white, post }: Props) {
     e.stopPropagation();
     heart.mutate();
     if (liked) {
-      umheart.mutate();
+      unheart.mutate();
     } else {
       heart.mutate();
     }
@@ -148,7 +162,7 @@ export default function ActionButtons({ white, post }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{1 || ''}</div>
+        <div className={style.count}>{post._count.Comments || ''}</div>
       </div>
       <div className={cx(style.repostButton, reposted && style.reposted, white && style.white)}>
         <button onClick={onClickRepost}>
@@ -159,7 +173,7 @@ export default function ActionButtons({ white, post }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{1 || ''}</div>
+        <div className={style.count}>{post._count.Reposts || ''}</div>
       </div>
       <div className={cx([style.heartButton, liked && style.liked, white && style.white])}>
         <button onClick={onClickHeart}>
@@ -170,7 +184,7 @@ export default function ActionButtons({ white, post }: Props) {
             </g>
           </svg>
         </button>
-        <div className={style.count}>{0 || ''}</div>
+        <div className={style.count}>{post._count.Hearts || ''}</div>
       </div>
     </div>
   )
