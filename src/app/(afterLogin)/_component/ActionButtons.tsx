@@ -2,14 +2,33 @@
 import { MouseEventHandler } from 'react';
 import style from './post.module.css';
 import cx from 'classnames';
+import { useMutation } from '@tanstack/react-query';
 
 type Props = {
   white?: boolean
+  postId: number,
 }
-export default function ActionButtons({ white }: Props) {
+export default function ActionButtons({ white, postId }: Props) {
   const commented = false;
   const reposted = true;
   const liked = true;
+  const heart = useMutation({
+    mutationFn: () => {
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${postId}/heart`, {
+        method: 'post',
+        credentials: 'include',
+      })
+    },
+    onMutate() {
+      
+    },
+    onError() {
+      
+    },
+    onSettled() {
+      
+    },
+  })
 
   const onClickComment = () => {}
   const onClickRepost = () => {}
