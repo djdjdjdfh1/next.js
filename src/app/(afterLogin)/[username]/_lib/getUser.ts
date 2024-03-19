@@ -10,7 +10,6 @@ export const getUser: QueryFunction<User, [_1: string, _2: string]>
       tags: ['users', username],
     },
     credentials: 'include',
-    headers: { Cookie: cookies().toString() },
     cache: 'no-store',
   });
   // The return value is *not* serialized
