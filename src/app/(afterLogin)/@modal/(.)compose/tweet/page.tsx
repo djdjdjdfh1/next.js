@@ -88,7 +88,7 @@ export default function TweetModal() {
       preview.forEach((p) => {
         p && formData.append('images', p.file);
       })
-      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${parent.postId}/comments`, {
+      return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts/${parent?.postId}/comments`, {
         method: 'post',
         credentials: 'include',
         body: formData,
