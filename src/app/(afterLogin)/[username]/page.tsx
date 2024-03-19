@@ -2,9 +2,19 @@ import style from './profile.module.css';
 import {dehydrate, HydrationBoundary, QueryClient} from "@tanstack/react-query";
 import UserPosts from "@/app/(afterLogin)/[username]/_component/UserPosts";
 import UserInfo from "@/app/(afterLogin)/[username]/_component/UserInfo";
-import {getUserServer} from "@/app/(afterLogin)/[username]/_lib/getUserServer"
 import {getUserPosts} from "@/app/(afterLogin)/[username]/_lib/getUserPosts";
-import { auth } from '@/auth';
+import {getUserServer} from "@/app/(afterLogin)/[username]/_lib/getUserServer";
+import {auth} from "@/auth";
+import {User} from "@/model/User";
+
+export async function generateMetadata({params}: Props) {
+  const user: User = await getUserServer({ queryKey: ["users", params.username] });
+  return {
+    title: `${user.nickname} (${user.id}) / Z`,
+    description: `${user.nickname} (${user.id}) 프로필`,
+  }
+}
+
 
 type Props = {
   params: { username: string },
@@ -20,7 +30,7 @@ export default async function Profile({params}: Props) {
   return (
     <main className={style.main}>
       <HydrationBoundary state={dehydratedState}>
-        <UserInfo username={username} session={session}/>
+        <UserInfo username={username} session={session} />
         <div>
           <UserPosts username={username} />
         </div>
